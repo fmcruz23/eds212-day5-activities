@@ -24,7 +24,7 @@ runoff_volumes <- predict_runoff(impervious_fractions, 182)
 
 runoff_df <- data.frame(impervious_fractions, runoff_volumes)
 
-watershed_runoff_plot <- ggplot(runoff_df, aes(x = impervious_fractions, y = runoff_volumes)) +
+watershed_runoff_plot <- ggplot(runoff_df, aes(x = impervious_fractions, y = runoff_volumes)) + 
   geom_point() +
   geom_line() +
   labs(title = "Watershed expected stormwater volume",
