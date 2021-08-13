@@ -1,0 +1,70 @@
+---
+title: "Tilapia imports"
+author: "Felicia Cruz"
+date: "8/13/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(here)
+library(janitor)
+library(skimr)
+```
+
+```{r}
+us_tilapia_imports <- read_csv(here("data", "us_tilapia_imports.csv"))
+
+```
+
+```{r}
+summary(us_tilapia_imports)
+names(us_tilapia_imports)
+skim(us_tilapia_imports)
+
+```
+
+```{r}
+us_tilapia_imports_long <- us_tilapia_imports %>% 
+  pivot_longer(!country, names_to = "year", values_to = "tot_volume")
+
+# check the class
+class(us_tilapia_imports_long$year)
+
+# change the class of year to be numeric
+us_tilapia_imports_long <- us_tilapia_imports_long %>%
+  mutate(year = as.numeric(year))
+```
+
+```{r}
+yearly_tilapia_tot <- us_tilapia_imports_long %>% 
+  group_by(year) %>% 
+  summarize(total_imports = sum(tot_volume, na.rm = TRUE))
+
+total_imports_plot <- ggplot(yearly_tilapia_tot, aes(x = year, y = total_imports)) +
+  geom_line() +
+  labs(title = "Total US Tilapia Imports",
+       y = "total imports (thousands of pounds)")
+
+ggsave(here("figs", "total_imports_by_year.jpg"), plot = total_imports_plot)
+```
+
+### Create a subset that only retains imports from Ecuador, Honduras, Costa Rica, Mexico
+```{r}
+us_tilapia_imports_subset <- us_tilapia_imports_long %>% 
+  filter(country == c("Ecuador", "Honduras", "Costa Rica", "Mexico")) 
+  
+subset_plot <- ggplot(us_tilapia_imports_subset, aes(x = year, y = tot_volume)) +
+  geom_line(aes(color = country)) +
+  labs(title = "Total US Tilapia Imports",
+       y = "volume (thousands of fish)") +
+  theme_classic()
+  
+ggsave(here("figs", "us_tilapia_imports_subset.jpg"), plot = subset_plot)
+```
+
+
+
+
+

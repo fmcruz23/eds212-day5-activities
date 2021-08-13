@@ -1,0 +1,38 @@
+---
+title: "Runoff volumes"
+author: "Felicia Cruz"
+date: "8/13/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(here)
+```
+
+```{r}
+# source the storm runoff.R script 
+source(here("src", "storm_runoff.R"))
+
+```
+
+
+```{r}
+impervious_fractions <- seq(0.6, 0.8, 0.01)
+runoff_volumes <- predict_runoff(impervious_fractions, 182)
+
+runoff_df <- data.frame(impervious_fractions, runoff_volumes)
+
+watershed_runoff_plot <- ggplot(runoff_df, aes(x = impervious_fractions, y = runoff_volumes)) +
+  geom_point() +
+  geom_line() +
+  labs(title = "Watershed expected stormwater volume",
+       x = "Fraction of watershed that is impervious",
+       y = "Runoff volume (ft^3)")
+
+watershed_runoff_plot
+
+ggsave(here("figs", "watershed_runoff.png"), plot = watershed_runoff_plot)
+```
+
